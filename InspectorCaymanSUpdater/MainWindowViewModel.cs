@@ -20,16 +20,16 @@ namespace InspectorCaymanSUpdater
                 OnPropertyChanged("LastSoftwereUpdateDate");
             }
         }
-        public string LastDbUpdateDate 
+        public string LastDbUpdateDate
         {
             get => _lastDbUpdateDate;
-            set 
+            set
             {
                 _lastDbUpdateDate = value;
                 OnPropertyChanged("LastDbUpdateDate");
             }
         }
-        public string LogText 
+        public string LogText
         {
             get => _logText.ToString();
         }
