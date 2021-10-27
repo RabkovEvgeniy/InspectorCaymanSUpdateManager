@@ -17,9 +17,10 @@
         </Grid.RowDefinitions>
         
         <ScrollViewer  Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
-            <TextBlock Padding="10" Background="#1e1e1e" Foreground="WhiteSmoke">
-                <Run>Привет</Run>
-            </TextBlock>
+            <TextBlock 
+                Padding="10" 
+                Background="#1e1e1e" Foreground="WhiteSmoke"
+                Text="{Binding Path=LogText}"/>
         </ScrollViewer>
 
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
@@ -36,13 +37,12 @@
         <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center" Foreground="WhiteSmoke" TextWrapping="Wrap" Margin="0 10">
                 <Run> Актуальное обновление ПО:</Run><LineBreak/>
-                <Run></Run>
+                <Run Text="{Binding Path=LastSoftwereUpdateDate, TargetNullValue = --/--/--}"/>
             </TextBlock>
 
             <TextBlock HorizontalAlignment="Center" Foreground="WhiteSmoke"  TextWrapping="Wrap" Margin="0 10">
-                <Run> Актуальное обновление БД:</Run>
-                <LineBreak/>
-                <Run></Run>
+                <Run> Актуальное обновление БД:</Run><LineBreak/>
+                <Run Text="{Binding Path = LastDbUpdateDate, TargetNullValue = --/--/--}"/>
             </TextBlock>
         </StackPanel>
     </Grid>
