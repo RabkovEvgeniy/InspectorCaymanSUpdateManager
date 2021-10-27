@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace InspectorCaymanSUpdater
 {
-    class MainWindowVeiwModel: INotifyPropertyChanged
+    class MainWindowViewModel: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string LastSoftwereUpdateDate 
@@ -20,16 +20,16 @@ namespace InspectorCaymanSUpdater
                 OnPropertyChanged("LastSoftwereUpdateDate");
             }
         }
-        public string LastDbUpdateDate 
+        public string LastDbUpdateDate
         {
             get => _lastDbUpdateDate;
-            set 
+            set
             {
                 _lastDbUpdateDate = value;
                 OnPropertyChanged("LastDbUpdateDate");
             }
         }
-        public string LogText 
+        public string LogText
         {
             get => _logText.ToString();
         }
@@ -38,9 +38,28 @@ namespace InspectorCaymanSUpdater
         private string _lastDbUpdateDate;
         private StringBuilder _logText;
 
-        public MainWindowVeiwModel() 
+        public  MainWindowViewModel(IMainWindowViewModelDataSource dataSource) 
         {
-            _logText = new StringBuilder("> Инициализирую модель представления", 100);
+            if (dataSource == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            _logText = new StringBuilder(500);
+            
+            Task.Run(() =>
+            {
+                LogInformation("Извлекаю дату последнего обновления базы данных...");
+                LastDbUpdateDate = dataSource.GetLastDbUpdateDate();
+                LogInformation("Дата последнего обновления базы данных получена.");
+            });
+
+            Task.Run(() =>
+            {
+                LogInformation("Извлекаю дату последнего обновления ПО...");
+                LastSoftwereUpdateDate = dataSource.GetLastSoftwereUpdateDate();
+                LogInformation("Дата последнего обновления ПО получена.");
+            });
         }
         
         public void LogInformation(string information) 
