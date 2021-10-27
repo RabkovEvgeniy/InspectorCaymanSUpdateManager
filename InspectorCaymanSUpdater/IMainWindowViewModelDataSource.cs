@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace InspectorCaymanSUpdater
 {
-    internal interface IMainWindowVeiwModelDataSource
+    internal interface IMainWindowViewModelDataSource
     {
         string GetLastSoftwereUpdateDate();
         string GetLastDbUpdateDate();

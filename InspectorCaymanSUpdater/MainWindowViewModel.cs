@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace InspectorCaymanSUpdater
 {
-    class MainWindowVeiwModel: INotifyPropertyChanged
+    class MainWindowViewModel: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string LastSoftwereUpdateDate 
@@ -38,7 +38,7 @@ namespace InspectorCaymanSUpdater
         private string _lastDbUpdateDate;
         private StringBuilder _logText;
 
-        public  MainWindowVeiwModel(IMainWindowVeiwModelDataSource dataSource) 
+        public  MainWindowViewModel(IMainWindowViewModelDataSource dataSource) 
         {
             if (dataSource == null)
             {
