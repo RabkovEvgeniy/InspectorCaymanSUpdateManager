@@ -38,9 +38,28 @@ namespace InspectorCaymanSUpdater
         private string _lastDbUpdateDate;
         private StringBuilder _logText;
 
-        public MainWindowVeiwModel() 
+        public  MainWindowVeiwModel(IMainWindowVeiwModelDataSource dataSource) 
         {
-            _logText = new StringBuilder("> Инициализирую модель представления", 100);
+            if (dataSource == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            _logText = new StringBuilder(500);
+            
+            Task.Run(() =>
+            {
+                LogInformation("Извлекаю дату последнего обновления базы данных...");
+                LastDbUpdateDate = dataSource.GetLastDbUpdateDate();
+                LogInformation("Дата последнего обновления базы данных получена.");
+            });
+
+            Task.Run(() =>
+            {
+                LogInformation("Извлекаю дату последнего обновления ПО...");
+                LastSoftwereUpdateDate = dataSource.GetLastSoftwereUpdateDate();
+                LogInformation("Дата последнего обновления ПО получена.");
+            });
         }
         
         public void LogInformation(string information) 
