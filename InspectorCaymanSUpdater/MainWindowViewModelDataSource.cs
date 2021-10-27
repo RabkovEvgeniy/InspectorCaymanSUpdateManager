@@ -38,7 +38,8 @@ namespace InspectorCaymanSUpdater
                 .Where(text => text.Contains(_inspectorCaymanSDbUpdateDataPattern))
                 .FirstOrDefault();
 
-            return inspectorCaymanSUpdateData.Split(" ")[^1]; 
+            string dateString = inspectorCaymanSUpdateData.Split(" ")[^1];
+            return DateTime.Parse(dateString).ToString("dd.MM.yy");
         }
 
         public string GetLastSoftwereUpdateDate()
@@ -64,7 +65,8 @@ namespace InspectorCaymanSUpdater
                 .Where(text => text.Contains(_inspectorCaymanSSoftwereUpdateDataPattern))
                 .FirstOrDefault();
 
-            return inspectorCaymanSUpdateData.Split(" ")[^1];
+            string dateString = inspectorCaymanSUpdateData.Split(" ")[^1];
+            return DateTime.Parse(dateString).ToString("dd.MM.yy");
         }
     }
 }
