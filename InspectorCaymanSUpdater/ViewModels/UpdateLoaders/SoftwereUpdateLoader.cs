@@ -1,5 +1,6 @@
 ﻿using AngleSharp;
 using AngleSharp.Dom;
+using InspectorCaymanSUpdater.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace InspectorCaymanSUpdater
 {
@@ -16,24 +18,42 @@ namespace InspectorCaymanSUpdater
         private const string _inspectorSiteDomen = @"https://www.rd-inspector.ru/";
         private const string _inspectorCaymanSSoftwereUpdatePageUrl = @"support/inspector-cayman-s/";
         private const string _updateFileDownloadPath = @".\SoftwereUpdate";
-        public void LoadUpdate(string targetDirectoryName)
+        public void LoadUpdate(string targetDirectoryName, INotifyChangedLogger logger)
         {
-            IConfiguration configuration = Configuration.Default;
-            IBrowsingContext browsingContext = new BrowsingContext(configuration);
+            try
+            {
+                IConfiguration configuration = Configuration.Default;
+                using (IBrowsingContext browsingContext = new BrowsingContext(configuration))
+                {
 
-            string updateFileUrl = GetSoftwereUpdateFileUrl(browsingContext, _inspectorSiteDomen + _inspectorCaymanSSoftwereUpdatePageUrl);
+                    logger.LogInformation("Получаю URL файла обновления ПО");
+                    string updateFileUrl = GetSoftwereUpdateFileUrl(browsingContext, _inspectorSiteDomen + _inspectorCaymanSSoftwereUpdatePageUrl);
 
-            var webClient = new WebClient();
-            webClient.DownloadFile(updateFileUrl, _updateFileDownloadPath);
+                    logger.LogInformation("Загружаю файл обновлений ПО");
+                    using (var webClient = new WebClient())
+                    {
+                        webClient.DownloadFile(updateFileUrl, _updateFileDownloadPath);
+                    }
 
-            ZipFile.ExtractToDirectory(_updateFileDownloadPath, targetDirectoryName);
-            File.Delete(_updateFileDownloadPath);
+                    logger.LogInformation($"Распаковываю файл обновлений ПО в {targetDirectoryName}");
+                    ZipFile.ExtractToDirectory(_updateFileDownloadPath, targetDirectoryName);
+
+                    logger.LogInformation("Удаляю временные файлы");
+                    File.Delete(_updateFileDownloadPath);
+
+                    logger.LogInformation("Операция прошла успешно");
+                }
+            }catch(Exception ex) 
+            {
+                logger.LogInformation($"Произошла ошибка: {ex.Message}");
+                MessageBox.Show("Произошла ошибка за доп. сведениями обратитесь в поддержку", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private string GetSoftwereUpdateFileUrl(IBrowsingContext browsingContext, string dbUpdatePageUrl)
+        private static string GetSoftwereUpdateFileUrl(IBrowsingContext browsingContext, string dbUpdatePageUrl)
         {
             string updateFileUrl;
-            string webPage = GetWebPage(dbUpdatePageUrl);
+            string webPage = Parsing.GetWebPage(dbUpdatePageUrl);
             using (IDocument document = browsingContext.OpenAsync(req => req.Content(webPage)).Result)
             {
                 updateFileUrl = document.QuerySelectorAll("a.url_file_btn")
@@ -45,20 +65,6 @@ namespace InspectorCaymanSUpdater
             return updateFileUrl;
         }
 
-        private string GetWebPage(string pageUrl)
-        {
-            string webPage;
-            WebRequest request = WebRequest.Create(pageUrl);
-            WebResponse response = request.GetResponse();
-            using (Stream stream = response.GetResponseStream())
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    webPage = reader.ReadToEnd();
-                }
-            }
-            return webPage;
-        }
-
+        
     }
 }

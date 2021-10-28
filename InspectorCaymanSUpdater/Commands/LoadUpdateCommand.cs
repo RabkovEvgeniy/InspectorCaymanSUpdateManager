@@ -37,7 +37,6 @@ namespace InspectorCaymanSUpdater
 
         public async void Execute(object parameter)
         {
-            _logger.LogInformation("Начинаю загрузку обновления");
             CommonFileDialogResult result;
             do
             {
@@ -45,8 +44,7 @@ namespace InspectorCaymanSUpdater
             } while (result != CommonFileDialogResult.Ok);
             string targetDirectoryName = _folderPickerDialog.FileName;
 
-            await Task.Run(() => _updateLoader.LoadUpdate(targetDirectoryName));
-            _logger.LogInformation("Операция прошла успешно");
+            await Task.Run(() => _updateLoader.LoadUpdate(targetDirectoryName, _logger));
         }
     }
 }

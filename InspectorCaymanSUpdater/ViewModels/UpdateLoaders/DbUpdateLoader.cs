@@ -8,6 +8,8 @@ using System.IO;
 using System.IO.Compression;
 using AngleSharp;
 using AngleSharp.Dom;
+using InspectorCaymanSUpdater.Services;
+using System.Windows;
 
 namespace InspectorCaymanSUpdater
 {
@@ -17,25 +19,45 @@ namespace InspectorCaymanSUpdater
         private const string _inspectorSupportPageUrl = "support/";
         private const string _inspectorCaymanSDbUpdatePattern = "Inspector Cayman S (обновление базы данных)";
         private const string _updateFileDownloadPath = @".\DbUpdate";
-        public void LoadUpdate(string targetDirectoryName)
+        public void LoadUpdate(string targetDirectoryName, INotifyChangedLogger logger)
         {
-            IConfiguration configuration = Configuration.Default;
-            IBrowsingContext browsingContext = new BrowsingContext(configuration);
+            try
+            {
+                IConfiguration configuration = Configuration.Default;
+                using (IBrowsingContext browsingContext = new BrowsingContext(configuration))
+                {
+                    logger.LogInformation("Получаю URL страницы обновлений БД");
+                    string dbUpdatePageUrl = GetDbUpdatePageUrl(browsingContext, _inspectorSiteDomen + _inspectorSupportPageUrl);
 
-            string dbUpdatePageUrl = GetDbUpdatePageUrl(browsingContext, _inspectorSiteDomen + _inspectorSupportPageUrl);
-            string updateFileUrl = GetDbUpdateFileUrl(browsingContext, _inspectorSiteDomen + dbUpdatePageUrl);
+                    logger.LogInformation("Получаю URL файла обновления БД");
+                    string updateFileUrl = GetDbUpdateFileUrl(browsingContext, _inspectorSiteDomen + dbUpdatePageUrl);
 
-            var webClient = new WebClient();
-            webClient.DownloadFile(updateFileUrl, _updateFileDownloadPath);
+                    logger.LogInformation("Загружаю файл обновлений БД");
+                    using (var webClient = new WebClient())
+                    {
+                        webClient.DownloadFile(updateFileUrl, _updateFileDownloadPath);
+                    }
 
-            ZipFile.ExtractToDirectory(_updateFileDownloadPath, targetDirectoryName);
-            File.Delete(_updateFileDownloadPath);
+                    logger.LogInformation($"Распаковываю полученный архив в {targetDirectoryName}");
+                    ZipFile.ExtractToDirectory(_updateFileDownloadPath, targetDirectoryName);
+
+                    logger.LogInformation("Удаляю временные файлы");
+                    File.Delete(_updateFileDownloadPath);
+
+                    logger.LogInformation("Операция прошла успешно");
+                }
+            }
+            catch(Exception ex) 
+            {
+                logger.LogInformation($"Произошла ошибка: {ex.Message}");
+                MessageBox.Show("Произошла ошибка за доп. сведениями обратитесь в поддержку", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private string GetDbUpdatePageUrl(IBrowsingContext browsingContext,string supportPageUrl)
+        private static string GetDbUpdatePageUrl(IBrowsingContext browsingContext,string supportPageUrl)
         {
             string dbUpdatePageUrl;
-            string webPage = GetWebPage(supportPageUrl);
+            string webPage = Parsing.GetWebPage(supportPageUrl);
             using (IDocument document = browsingContext.OpenAsync(req => req.Content(webPage)).Result)
             {
                 dbUpdatePageUrl = document.QuerySelectorAll("a")
@@ -47,10 +69,10 @@ namespace InspectorCaymanSUpdater
             return dbUpdatePageUrl;
         }
 
-        private string GetDbUpdateFileUrl(IBrowsingContext browsingContext, string dbUpdatePageUrl)
+        private static string GetDbUpdateFileUrl(IBrowsingContext browsingContext, string dbUpdatePageUrl)
         {
             string updateFileUrl;
-            string webPage = GetWebPage(dbUpdatePageUrl);
+            string webPage = Parsing.GetWebPage(dbUpdatePageUrl);
             using (IDocument document = browsingContext.OpenAsync(req => req.Content(webPage)).Result)
             {
                 updateFileUrl = document.QuerySelectorAll("a.url_file_btn")
@@ -60,21 +82,6 @@ namespace InspectorCaymanSUpdater
             }
 
             return updateFileUrl;
-        }
-
-        private string GetWebPage(string pageUrl) 
-        {
-            string webPage;
-            WebRequest request = WebRequest.Create(pageUrl);
-            WebResponse response = request.GetResponse();
-            using (Stream stream = response.GetResponseStream())
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    webPage = reader.ReadToEnd();
-                }
-            }
-            return webPage;
         }
     }
 }

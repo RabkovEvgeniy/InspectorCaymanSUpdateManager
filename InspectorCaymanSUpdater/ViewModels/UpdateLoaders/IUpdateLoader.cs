@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InspectorCaymanSUpdater.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace InspectorCaymanSUpdater
 {
     interface IUpdateLoader
     {
-        void LoadUpdate(string targetDirectoryName);
+        void LoadUpdate(string targetDirectoryName, INotifyChangedLogger logger);
     }
 }
