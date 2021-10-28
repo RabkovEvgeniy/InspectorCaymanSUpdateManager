@@ -2,18 +2,15 @@
 using AngleSharp.Dom;
 using InspectorCaymanSUpdater.Services;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace InspectorCaymanSUpdater
 {
-    class SoftwereUpdateLoader: IUpdateLoader
+    class SoftwereUpdateLoader : IUpdateLoader
     {
         private const string _inspectorSiteDomen = @"https://www.rd-inspector.ru/";
         private const string _inspectorCaymanSSoftwereUpdatePageUrl = @"support/inspector-cayman-s/";
@@ -43,7 +40,8 @@ namespace InspectorCaymanSUpdater
 
                     logger.LogInformation("Операция прошла успешно");
                 }
-            }catch(Exception ex) 
+            }
+            catch (Exception ex)
             {
                 logger.LogInformation($"Произошла ошибка: {ex.Message}");
                 MessageBox.Show("Произошла ошибка за доп. сведениями обратитесь в поддержку", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -65,6 +63,6 @@ namespace InspectorCaymanSUpdater
             return updateFileUrl;
         }
 
-        
+
     }
 }

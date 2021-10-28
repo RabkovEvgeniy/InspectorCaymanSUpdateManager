@@ -4,6 +4,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <StartupObject>InspectorCaymanSUpdater.App</StartupObject>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <Win32Resource />
+    <AssemblyName>InspectorCaymanSUpdateManager</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

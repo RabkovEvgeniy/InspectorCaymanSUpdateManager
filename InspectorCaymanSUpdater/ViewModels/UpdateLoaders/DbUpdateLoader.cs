@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.IO;
-using System.IO.Compression;
-using AngleSharp;
+﻿using AngleSharp;
 using AngleSharp.Dom;
 using InspectorCaymanSUpdater.Services;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
 using System.Windows;
 
 namespace InspectorCaymanSUpdater
@@ -47,14 +44,14 @@ namespace InspectorCaymanSUpdater
                     logger.LogInformation("Операция прошла успешно");
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 logger.LogInformation($"Произошла ошибка: {ex.Message}");
                 MessageBox.Show("Произошла ошибка за доп. сведениями обратитесь в поддержку", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private static string GetDbUpdatePageUrl(IBrowsingContext browsingContext,string supportPageUrl)
+        private static string GetDbUpdatePageUrl(IBrowsingContext browsingContext, string supportPageUrl)
         {
             string dbUpdatePageUrl;
             string webPage = Parsing.GetWebPage(supportPageUrl);

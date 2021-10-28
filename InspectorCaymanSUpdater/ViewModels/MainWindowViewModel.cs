@@ -1,29 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using InspectorCaymanSUpdater.Services;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using InspectorCaymanSUpdater.Services;
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace InspectorCaymanSUpdater
 {
-    class MainWindowViewModel: INotifyPropertyChanged
+    class MainWindowViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
         private readonly INotifyChangedLogger _logger;
         private readonly IUpdateLoader _dbUpdateLoader;
         private readonly IUpdateLoader _softwereUpdateLoader;
-        private readonly CommonFileDialog _fileDialog;
+        private readonly CommonOpenFileDialog _fileDialog = new()
+        {
+            Title = "Выбор папки сохранения файла обновлений",
+            IsFolderPicker = true,
+            Multiselect = false,
+            EnsurePathExists = true
+        };
 
         public INotifyChangedLogger Logger => _logger;
-        public LoadUpdateCommand LoadDbUpdateCommand => _loadDbUpdateCommand ?? 
+        public LoadUpdateCommand LoadDbUpdateCommand => _loadDbUpdateCommand ??
             (_loadDbUpdateCommand = new LoadUpdateCommand(_dbUpdateLoader, _logger, _fileDialog));
-        public LoadUpdateCommand LoadSoftwereUpdateCommand=>_loadSoftwereUpdateCommand ??
+        public LoadUpdateCommand LoadSoftwereUpdateCommand => _loadSoftwereUpdateCommand ??
                     (_loadSoftwereUpdateCommand = new LoadUpdateCommand(_softwereUpdateLoader, _logger, _fileDialog));
         public string LastSoftwereUpdateDate
         {
@@ -48,9 +51,9 @@ namespace InspectorCaymanSUpdater
         private string _lastDbUpdateDate;
         private LoadUpdateCommand _loadDbUpdateCommand;
         private LoadUpdateCommand _loadSoftwereUpdateCommand;
-        
+
         public MainWindowViewModel(IMainWindowViewModelDataSource dataSource, IUpdateLoader dbUpdateLoader, IUpdateLoader softwereUpdateLoader,
-            INotifyChangedLogger logger,CommonFileDialog fileDialog)
+            INotifyChangedLogger logger)
         {
             if (dataSource == null || dbUpdateLoader == null || softwereUpdateLoader == null || logger == null)
             {
@@ -60,7 +63,6 @@ namespace InspectorCaymanSUpdater
             _logger = logger;
             _dbUpdateLoader = dbUpdateLoader;
             _softwereUpdateLoader = softwereUpdateLoader;
-            _fileDialog = fileDialog;
 
             InitializeLastUpdateDates(dataSource);
         }

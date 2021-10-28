@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using InspectorCaymanSUpdater.Services;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using InspectorCaymanSUpdater.Services;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace InspectorCaymanSUpdater
 {
@@ -19,11 +16,11 @@ namespace InspectorCaymanSUpdater
 
         private INotifyChangedLogger _logger;
         private IUpdateLoader _updateLoader;
-        private CommonFileDialog _folderPickerDialog;
+        private CommonOpenFileDialog _folderPickerDialog;
 
-        public LoadUpdateCommand(IUpdateLoader updateLoader, INotifyChangedLogger logger, CommonFileDialog folderPickerDialog)
+        public LoadUpdateCommand(IUpdateLoader updateLoader, INotifyChangedLogger logger, CommonOpenFileDialog folderPickerDialog)
         {
-            if (updateLoader == null || logger == null || folderPickerDialog == null) 
+            if (updateLoader == null || logger == null || folderPickerDialog == null)
             {
                 throw new ArgumentNullException();
             }
