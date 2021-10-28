@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InspectorCaymanSUpdater"
         mc:Ignorable="d"
-        Title="Update Manager of InspectorCaymanS" Height="450" Width="800" ResizeMode="NoResize" Background="#252526">
+        Title="Update Manager of InspectorCaymanS" Height="450" Width="800" ResizeMode="CanMinimize" Background="#252526">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -27,10 +27,12 @@
             <Button Margin="10" 
                     Height="40" Width="150" 
                     Background="#333333" Foreground="WhiteSmoke"
+                    Command="{Binding LoadSoftwereUpdateCommand}"
                     Content="Скачать обновление ПО"/>
             <Button Margin="10" 
                     Height="40" Width="150" 
                     Background="#333333" Foreground="WhiteSmoke"
+                    Command="{Binding LoadDbUpdateCommand}"
                     Content="Скачать обновление БД"/>
         </StackPanel>
 
