@@ -23,7 +23,7 @@ namespace InspectorCaymanSUpdater
             get 
             {
                 return _loadDbUpdateCommand ??
-                    (_loadDbUpdateCommand = new LoadUpdateCommand(_dbUpdateLoader, _fileDialog));
+                    (_loadDbUpdateCommand = new LoadUpdateCommand(_dbUpdateLoader, _logger, _fileDialog));
             }
         }
         public LoadUpdateCommand LoadSoftwereUpdateCommand
@@ -31,7 +31,7 @@ namespace InspectorCaymanSUpdater
             get
             {
                 return _loadSoftwereUpdateCommand ??
-                    (_loadSoftwereUpdateCommand = new LoadUpdateCommand(_softwereUpdateLoader, _fileDialog));
+                    (_loadSoftwereUpdateCommand = new LoadUpdateCommand(_softwereUpdateLoader, _logger, _fileDialog));
             }
         }
         public string LastSoftwereUpdateDate 
@@ -76,16 +76,16 @@ namespace InspectorCaymanSUpdater
 
             Task.Run(() =>
             {
-                _logger.LogInformation("Извлекаю дату последнего обновления базы данных...");
+                _logger.LogInformation("Извлекаю дату последнего обновления базы данных");
                 LastDbUpdateDate = dataSource.GetLastDbUpdateDate();
-                _logger.LogInformation("Дата последнего обновления базы данных получена.");
+                _logger.LogInformation("Дата последнего обновления базы данных получена");
            
-                _logger.LogInformation("Извлекаю дату последнего обновления ПО...");
+                _logger.LogInformation("Извлекаю дату последнего обновления ПО");
                 LastSoftwereUpdateDate = dataSource.GetLastSoftwereUpdateDate();
-                _logger.LogInformation("Дата последнего обновления ПО получена.");
+                _logger.LogInformation("Дата последнего обновления ПО получена");
             });
         }
 
-        public void OnPropertyChanged([CallerMemberName] string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        private void OnPropertyChanged([CallerMemberName] string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
     }
 }
