@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using InspectorCaymanSUpdater.Services;
+using System.Windows;
 
 namespace InspectorCaymanSUpdater
 {
@@ -18,23 +19,13 @@ namespace InspectorCaymanSUpdater
         private readonly IUpdateLoader _dbUpdateLoader;
         private readonly IUpdateLoader _softwereUpdateLoader;
         private readonly CommonFileDialog _fileDialog;
-        public LoadUpdateCommand LoadDbUpdateCommand 
-        {
-            get 
-            {
-                return _loadDbUpdateCommand ??
-                    (_loadDbUpdateCommand = new LoadUpdateCommand(_dbUpdateLoader, _logger, _fileDialog));
-            }
-        }
-        public LoadUpdateCommand LoadSoftwereUpdateCommand
-        {
-            get
-            {
-                return _loadSoftwereUpdateCommand ??
+
+        public INotifyChangedLogger Logger => _logger;
+        public LoadUpdateCommand LoadDbUpdateCommand => _loadDbUpdateCommand ?? 
+            (_loadDbUpdateCommand = new LoadUpdateCommand(_dbUpdateLoader, _logger, _fileDialog));
+        public LoadUpdateCommand LoadSoftwereUpdateCommand=>_loadSoftwereUpdateCommand ??
                     (_loadSoftwereUpdateCommand = new LoadUpdateCommand(_softwereUpdateLoader, _logger, _fileDialog));
-            }
-        }
-        public string LastSoftwereUpdateDate 
+        public string LastSoftwereUpdateDate
         {
             get => _lastSoftwereUpdateDate;
             set
@@ -52,16 +43,13 @@ namespace InspectorCaymanSUpdater
                 OnPropertyChanged(nameof(LastDbUpdateDate));
             }
         }
-        public INotifyChangedLogger Logger
-        {
-            get => _logger;
-        }
 
         private string _lastSoftwereUpdateDate;
         private string _lastDbUpdateDate;
         private LoadUpdateCommand _loadDbUpdateCommand;
         private LoadUpdateCommand _loadSoftwereUpdateCommand;
-        public  MainWindowViewModel(IMainWindowViewModelDataSource dataSource, IUpdateLoader dbUpdateLoader, IUpdateLoader softwereUpdateLoader,
+        
+        public MainWindowViewModel(IMainWindowViewModelDataSource dataSource, IUpdateLoader dbUpdateLoader, IUpdateLoader softwereUpdateLoader,
             INotifyChangedLogger logger,CommonFileDialog fileDialog)
         {
             if (dataSource == null || dbUpdateLoader == null || softwereUpdateLoader == null || logger == null)
@@ -74,16 +62,28 @@ namespace InspectorCaymanSUpdater
             _softwereUpdateLoader = softwereUpdateLoader;
             _fileDialog = fileDialog;
 
-            Task.Run(() =>
+            InitializeLastUpdateDates(dataSource);
+        }
+
+        private async void InitializeLastUpdateDates(IMainWindowViewModelDataSource dataSource)
+        {
+            try
             {
-                _logger.LogInformation("Извлекаю дату последнего обновления базы данных");
-                LastDbUpdateDate = dataSource.GetLastDbUpdateDate();
-                _logger.LogInformation("Дата последнего обновления базы данных получена");
-           
-                _logger.LogInformation("Извлекаю дату последнего обновления ПО");
-                LastSoftwereUpdateDate = dataSource.GetLastSoftwereUpdateDate();
-                _logger.LogInformation("Дата последнего обновления ПО получена");
-            });
+                await Task.Run(() =>
+                {
+                    _logger.LogInformation("Извлекаю даты последних обновлений");
+                    LastDbUpdateDate = dataSource.GetLastDbUpdateDate();
+                    LastSoftwereUpdateDate = dataSource.GetLastSoftwereUpdateDate();
+                    _logger.LogInformation("Даты последних обновлений получены");
+
+                });
+            }
+            catch (Exception ex)
+            {
+                string exceptionMessage = $"Произошла ошибка:{ex.Message}\nПожалуйста, устраните проблему и запустите программу еще раз";
+                MessageBox.Show(exceptionMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown());
+            }
         }
 
         private void OnPropertyChanged([CallerMemberName] string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
