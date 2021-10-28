@@ -8,6 +8,6 @@ namespace InspectorCaymanSUpdater
 {
     interface IUpdateLoader
     {
-        Task LoadUpdateAsync(string targetPath);
+        void LoadUpdate(string targetDirectoryName);
     }
 }

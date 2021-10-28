@@ -34,9 +34,9 @@ namespace InspectorCaymanSUpdater
             {
                 result = _folderPickerDialog.ShowDialog();
             } while (result != CommonFileDialogResult.Ok);
-            string targetDirectory = _folderPickerDialog.FileName;
+            string targetDirectoryName = _folderPickerDialog.FileName;
 
-            await _updateLoader.LoadUpdateAsync(targetDirectory);
+            await Task.Run(() => _updateLoader.LoadUpdate(targetDirectoryName));
         }
     }
 }
