@@ -12,12 +12,16 @@ namespace InspectorCaymanSUpdater.Services
         public event PropertyChangedEventHandler PropertyChanged;
         public string Log => _log.ToString();
 
+        private readonly object _syncRoot = new();
         private readonly StringBuilder _log = new(500);
 
         public void LogInformation(string information)
         {
-            _log.AppendLine($"> {information};");
-            OnPropertyChanged(nameof(Log));
+            lock (_syncRoot)
+            {
+                _log.AppendLine($"> {information};");
+                OnPropertyChanged(nameof(Log));
+            }
         }
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
