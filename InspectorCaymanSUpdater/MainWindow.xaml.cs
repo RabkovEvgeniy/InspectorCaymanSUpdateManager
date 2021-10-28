@@ -24,14 +24,18 @@ namespace InspectorCaymanSUpdater
         public MainWindow()
         {
             InitializeComponent();
+
             IMainWindowViewModelDataSource viewModelDataSource = new MainWindowViewModelDataSource();
-            DataContext = new MainWindowViewModel(viewModelDataSource);
+            var dialog = new CommonOpenFileDialog() 
+            {
+                Title = "Выбор папки сохранения обновлений",
+                IsFolderPicker = true,
+            };
+
+            IUpdateLoader dbUpdateLoader = new DbUpdateLoader();
+            IUpdateLoader softwereUpdateLoader = new SoftwereUpdateLoader(); 
+
+            DataContext = new MainWindowViewModel(viewModelDataSource, dbUpdateLoader, softwereUpdateLoader, dialog);
         }
     }
 }
-
-//var dialog = new CommonOpenFileDialog();
-//dialog.IsFolderPicker = true;
-//dialog.Title = "Выбор папки сохранения обновлений";
-//CommonFileDialogResult result = dialog.ShowDialog();
-//string file = dialog.FileName;
