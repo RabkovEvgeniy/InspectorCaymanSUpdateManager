@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using InspectorCaymanSUpdater.Services;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace InspectorCaymanSUpdater
@@ -31,11 +32,11 @@ namespace InspectorCaymanSUpdater
                 Title = "Выбор папки сохранения обновлений",
                 IsFolderPicker = true,
             };
-
             IUpdateLoader dbUpdateLoader = new DbUpdateLoader();
-            IUpdateLoader softwereUpdateLoader = new SoftwereUpdateLoader(); 
+            IUpdateLoader softwereUpdateLoader = new SoftwereUpdateLoader();
+            INotifyChangedLogger logger = new Logger();
 
-            DataContext = new MainWindowViewModel(viewModelDataSource, dbUpdateLoader, softwereUpdateLoader, dialog);
+            DataContext = new MainWindowViewModel(viewModelDataSource, dbUpdateLoader, softwereUpdateLoader, logger, dialog);
         }
     }
 }

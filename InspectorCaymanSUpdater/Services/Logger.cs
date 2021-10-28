@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InspectorCaymanSUpdater.Services
 {
-    public class Logger : INotifyLogChangedLogger
+    public class Logger : INotifyChangedLogger
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string Log => _log.ToString();

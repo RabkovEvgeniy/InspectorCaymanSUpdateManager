@@ -16,11 +16,11 @@
             <RowDefinition Height ="0.5*"/>
         </Grid.RowDefinitions>
         
-        <ScrollViewer  Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" DataContext="{Binding Path=Logger}">
             <TextBlock 
                 Padding="10" 
                 Background="#1e1e1e" Foreground="WhiteSmoke"
-                Text="{Binding Path=LogText}"/>
+                Text="{Binding Path=Log}"/>
         </ScrollViewer>
 
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">

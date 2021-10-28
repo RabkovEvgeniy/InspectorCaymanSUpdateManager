@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using InspectorCaymanSUpdater.Services;
 
 namespace InspectorCaymanSUpdater
 {
@@ -13,10 +14,10 @@ namespace InspectorCaymanSUpdater
     {
         public event PropertyChangedEventHandler PropertyChanged;
         
+        private readonly INotifyChangedLogger _logger;
         private readonly IUpdateLoader _dbUpdateLoader;
         private readonly IUpdateLoader _softwereUpdateLoader;
         private readonly CommonFileDialog _fileDialog;
-        
         public LoadUpdateCommand LoadDbUpdateCommand 
         {
             get 
@@ -39,7 +40,7 @@ namespace InspectorCaymanSUpdater
             set
             {
                 _lastSoftwereUpdateDate = value;
-                OnPropertyChanged("LastSoftwereUpdateDate");
+                OnPropertyChanged(nameof(LastSoftwereUpdateDate));
             }
         }
         public string LastDbUpdateDate
@@ -48,49 +49,41 @@ namespace InspectorCaymanSUpdater
             set
             {
                 _lastDbUpdateDate = value;
-                OnPropertyChanged("LastDbUpdateDate");
+                OnPropertyChanged(nameof(LastDbUpdateDate));
             }
         }
-        public string LogText
+        public INotifyChangedLogger Logger
         {
-            get => _logText.ToString();
+            get => _logger;
         }
 
         private string _lastSoftwereUpdateDate;
         private string _lastDbUpdateDate;
-        private StringBuilder _logText;
         private LoadUpdateCommand _loadDbUpdateCommand;
         private LoadUpdateCommand _loadSoftwereUpdateCommand;
-
         public  MainWindowViewModel(IMainWindowViewModelDataSource dataSource, IUpdateLoader dbUpdateLoader, IUpdateLoader softwereUpdateLoader,
-            CommonFileDialog fileDialog) 
+            INotifyChangedLogger logger,CommonFileDialog fileDialog)
         {
-            if (dataSource == null || dbUpdateLoader == null || softwereUpdateLoader == null)
+            if (dataSource == null || dbUpdateLoader == null || softwereUpdateLoader == null || logger == null)
             {
                 throw new ArgumentNullException();
             }
 
-            _logText = new StringBuilder(500);
+            _logger = logger;
             _dbUpdateLoader = dbUpdateLoader;
             _softwereUpdateLoader = softwereUpdateLoader;
             _fileDialog = fileDialog;
 
             Task.Run(() =>
             {
-                LogInformation("Извлекаю дату последнего обновления базы данных...");
+                _logger.LogInformation("Извлекаю дату последнего обновления базы данных...");
                 LastDbUpdateDate = dataSource.GetLastDbUpdateDate();
-                LogInformation("Дата последнего обновления базы данных получена.");
+                _logger.LogInformation("Дата последнего обновления базы данных получена.");
            
-                LogInformation("Извлекаю дату последнего обновления ПО...");
+                _logger.LogInformation("Извлекаю дату последнего обновления ПО...");
                 LastSoftwereUpdateDate = dataSource.GetLastSoftwereUpdateDate();
-                LogInformation("Дата последнего обновления ПО получена.");
+                _logger.LogInformation("Дата последнего обновления ПО получена.");
             });
-        }
-        
-        public void LogInformation(string information) 
-        {
-            _logText.AppendLine("> " + information);
-            OnPropertyChanged("LogText");
         }
 
         public void OnPropertyChanged([CallerMemberName] string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
