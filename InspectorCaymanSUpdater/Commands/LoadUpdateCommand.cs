@@ -37,11 +37,17 @@ namespace InspectorCaymanSUpdater
 
         public async void Execute(object parameter)
         {
-            CommonFileDialogResult result;
-            do
+
+            CommonFileDialogResult result = _folderPickerDialog.ShowDialog();
+            switch (result)
             {
-                result = _folderPickerDialog.ShowDialog();
-            } while (result != CommonFileDialogResult.Ok);
+                case CommonFileDialogResult.None:
+                case CommonFileDialogResult.Cancel:
+                    _logger.LogInformation("Операция была отменена");
+                    return;
+                case CommonFileDialogResult.Ok:
+                    break;
+            }
             string targetDirectoryName = _folderPickerDialog.FileName;
 
             await Task.Run(() => _updateLoader.LoadUpdate(targetDirectoryName, _logger));
