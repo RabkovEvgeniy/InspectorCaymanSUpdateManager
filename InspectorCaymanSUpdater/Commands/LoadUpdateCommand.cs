@@ -17,9 +17,9 @@ namespace InspectorCaymanSUpdater
         }
 
         private IUpdateLoader _updateLoader;
-        private CommonOpenFileDialog _folderPickerDialog; 
+        private CommonFileDialog _folderPickerDialog; 
 
-        public LoadUpdateCommand(IUpdateLoader updateLoader, CommonOpenFileDialog folderPickerDialog) 
+        public LoadUpdateCommand(IUpdateLoader updateLoader, CommonFileDialog folderPickerDialog) 
         {
             _folderPickerDialog = folderPickerDialog;
             _updateLoader = updateLoader;
